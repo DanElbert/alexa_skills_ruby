@@ -23,7 +23,7 @@ module AlexaSkillsRuby
       run_callbacks :authenticate do
         if @application_id
           if @application_id != @request.session.application.application_id
-            raise InvalidApplicationId
+            raise InvalidApplicationId, "Invalid: [#{@request.session.application.application_id}]"
           end
         end
       end
