@@ -3,91 +3,15 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe AlexaSkillsRuby::JsonObjects::SkillsRequest do
 
   let(:launch_request_json) do
-    {
-      'version' => "1.0",
-      'session' => {
-        'new' => true,
-        'sessionId' => "amzn1.echo-api.session.0000000-0000-0000-0000-00000000000",
-        'application' => {
-          'applicationId' => "amzn1.echo-sdk-ams.app.000000-d0ed-0000-ad00-000000d00ebe"
-        },
-        'attributes' => {},
-        'user' => {
-          'userId' => "amzn1.account.AM3B00000000000000000000000"
-        }
-      },
-      'request' => {
-        'type' => "LaunchRequest",
-        'requestId' => "amzn1.echo-api.request.0000000-0000-0000-0000-00000000000",
-        'timestamp' => "2015-05-13T12:34:56Z"
-      }
-    }
+    load_fixture 'example_launch.json'
   end
 
   let(:intent_request_json) do
-    {
-      'version' => "1.0",
-      'session' => {
-        'new' => false,
-        'sessionId' => "amzn1.echo-api.session.0000000-0000-0000-0000-00000000000",
-        'application' => {
-          'applicationId' => "amzn1.echo-sdk-ams.app.000000-d0ed-0000-ad00-000000d00ebe"
-        },
-        'attributes' => {
-          'supportedHoroscopePeriods' => {
-            'daily' => true,
-            'weekly' => false,
-            'monthly' => false
-          }
-        },
-        'user' => {
-          'userId' => "amzn1.account.AM3B00000000000000000000000"
-        }
-      },
-      'request' => {
-        'type' => "IntentRequest",
-        'requestId' => "amzn1.echo-api.request.0000000-0000-0000-0000-00000000000",
-        'timestamp' => "2015-05-13T12:34:56Z",
-        'intent' => {
-          'name' => "GetZodiacHoroscopeIntent",
-          'slots' => {
-            'ZodiacSign' => {
-              'name' => "ZodiacSign",
-              'value' => "virgo"
-            }
-          }
-        }
-      }
-    }
+    load_fixture 'example_intent.json'
   end
 
   let(:session_ended_request_json) do
-    {
-      'version' => "1.0",
-      'session' => {
-        'new' => false,
-        'sessionId' => "amzn1.echo-api.session.0000000-0000-0000-0000-00000000000",
-        'application' => {
-          'applicationId' => "amzn1.echo-sdk-ams.app.000000-d0ed-0000-ad00-000000d00ebe"
-        },
-        'attributes' => {
-          'supportedHoroscopePeriods' => {
-            'daily' => true,
-            'weekly' => false,
-            'monthly' => false
-          }
-        },
-        'user' => {
-          'userId' => "amzn1.account.AM3B00000000000000000000000"
-        }
-      },
-      'request' => {
-        'type' => "SessionEndedRequest",
-        'requestId' => "amzn1.echo-api.request.0000000-0000-0000-0000-00000000000",
-        'timestamp' => "2015-05-13T12:34:56Z",
-        'reason' => "USER_INITIATED"
-      }
-    }
+    load_fixture 'example_session_ended.json'
   end
 
   it 'constructs a launch request' do

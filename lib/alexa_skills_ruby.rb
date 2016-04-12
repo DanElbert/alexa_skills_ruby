@@ -1,4 +1,5 @@
 require 'active_support/core_ext/class/attribute'
+require 'active_support/callbacks'
 require 'multi_json'
 
 require 'alexa_skills_ruby/version'
@@ -18,6 +19,8 @@ require 'alexa_skills_ruby/json_objects/reprompt'
 require 'alexa_skills_ruby/json_objects/response'
 require 'alexa_skills_ruby/json_objects/skills_request'
 require 'alexa_skills_ruby/json_objects/skills_response'
+require 'alexa_skills_ruby/errors'
+require 'alexa_skills_ruby/handler'
 
 module AlexaSkillsRuby
 
