@@ -4,11 +4,15 @@ module AlexaSkillsRuby
     define_callbacks :authenticate, :session_start, :launch, :intent, :session_end
 
     attr_reader :request, :response
-    attr_accessor :application_id
+    attr_accessor :application_id, :logger
 
     def initialize(opts = {})
       if opts[:application_id]
         @application_id = opts[:application_id]
+      end
+
+      if opts[:logger]
+        @logger = opts[:logger]
       end
     end
 
