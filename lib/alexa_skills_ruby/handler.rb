@@ -36,6 +36,8 @@ module AlexaSkillsRuby
         when JsonObjects::SessionEndedRequest
           run_callbacks :session_end
       end
+
+      MultiJson.dump(response.as_json)
     end
 
     def self.on_authenticate(&block)
