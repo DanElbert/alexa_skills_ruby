@@ -27,6 +27,14 @@ module AlexaSkillsRuby
         end
       end
 
+      def intent_name
+        if self.is_a? IntentRequest
+          self.intent.name
+        else
+          nil
+        end
+      end
+
     end
   end
 end

@@ -9,6 +9,21 @@ module AlexaSkillsRuby
       def initialize
         self.should_end_session = true
       end
+
+      def set_output_speech_text(text)
+        self.output_speech = OutputSpeech.text(text)
+      end
+
+      def set_simple_card(title, content)
+        self.card = Card.simple(title, content)
+      end
+
+      def set_reprompt_speech_text(text)
+        os = OutputSpeech.text(text)
+        rp = Reprompt.new
+        rp.output_speech = os
+        self.reprompt = rp
+      end
     end
   end
 end

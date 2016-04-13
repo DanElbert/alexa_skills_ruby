@@ -3,7 +3,7 @@ module AlexaSkillsRuby
     include ActiveSupport::Callbacks
     define_callbacks :authenticate, :session_start, :launch, :intent, :session_end
 
-    attr_reader :request, :response
+    attr_reader :request, :session, :response
     attr_accessor :application_id, :logger
 
     def initialize(opts = {})
@@ -16,23 +16,32 @@ module AlexaSkillsRuby
       end
     end
 
+    def session_attributes
+      @session.attributes ||= {}
+    end
+
     def handle(request_json)
-      @request = JsonObjects::SkillsRequest.new(MultiJson.load(request_json))
-      @response = JsonObjects::SkillsResponse.new
+      @skill_request = JsonObjects::SkillsRequest.new(MultiJson.load(request_json))
+      @skill_response = JsonObjects::SkillsResponse.new
+
+      @session = @skill_request.session
+      @request = @skill_request.request
+      @response = @skill_response.response
+
 
       run_callbacks :authenticate do
         if @application_id
-          if @application_id != @request.session.application.application_id
-            raise InvalidApplicationId, "Invalid: [#{@request.session.application.application_id}]"
+          if @application_id != session.application.application_id
+            raise InvalidApplicationId, "Invalid: [#{session.application.application_id}]"
           end
         end
       end
 
-      if @request.session.new
+      if session.new
         run_callbacks :session_start
       end
 
-      case @request.request
+      case request
         when JsonObjects::LaunchRequest
           run_callbacks :launch
         when JsonObjects::IntentRequest
@@ -41,7 +50,13 @@ module AlexaSkillsRuby
           run_callbacks :session_end
       end
 
-      MultiJson.dump(response.as_json)
+      if response.should_end_session
+        @skill_response.session_attributes = {}
+      else
+        @skill_response.session_attributes = session_attributes
+      end
+
+      MultiJson.dump(@skill_response.as_json)
     end
 
     def self.on_authenticate(&block)
@@ -63,7 +78,7 @@ module AlexaSkillsRuby
     def self.on_intent(intent_name = nil, &block)
       opts = {}
       if intent_name
-        opts[:if] = -> { @request.intent_name == intent_name }
+        opts[:if] = -> { request.intent_name == intent_name }
       end
       set_callback :intent, :before, block, opts
     end
