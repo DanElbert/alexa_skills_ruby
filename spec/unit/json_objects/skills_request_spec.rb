@@ -30,6 +30,7 @@ describe AlexaSkillsRuby::JsonObjects::SkillsRequest do
     expect(r.request.type).to eq 'LaunchRequest'
     expect(r.request.request_id).to eq 'amzn1.echo-api.request.0000000-0000-0000-0000-00000000000'
     expect(r.request.timestamp).to eq '2015-05-13T12:34:56Z'
+    expect(r.request.locale).to eq 'en-US'
   end
 
   it 'constructs an intent request' do
@@ -38,6 +39,7 @@ describe AlexaSkillsRuby::JsonObjects::SkillsRequest do
     expect(r.request.type).to eq 'IntentRequest'
     expect(r.request.request_id).to eq 'amzn1.echo-api.request.0000000-0000-0000-0000-00000000000'
     expect(r.request.timestamp).to eq '2015-05-13T12:34:56Z'
+    expect(r.request.locale).to eq 'en-US'
     expect(r.request.intent).to be_a AlexaSkillsRuby::JsonObjects::Intent
     expect(r.request.intent.name).to eq 'GetZodiacHoroscopeIntent'
     expect(r.request.intent.slots).to be_a Hash
@@ -50,6 +52,7 @@ describe AlexaSkillsRuby::JsonObjects::SkillsRequest do
     expect(r.request.type).to eq 'SessionEndedRequest'
     expect(r.request.request_id).to eq 'amzn1.echo-api.request.0000000-0000-0000-0000-00000000000'
     expect(r.request.timestamp).to eq '2015-05-13T12:34:56Z'
+    expect(r.request.locale).to eq 'en-US'
     expect(r.request.reason).to eq 'USER_INITIATED'
   end
 
