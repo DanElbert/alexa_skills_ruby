@@ -1,7 +1,7 @@
 module AlexaSkillsRuby
   module JsonObjects
     class BaseRequest < JsonObject
-      attributes :type, :request_id, :timestamp
+      attributes :type, :request_id, :timestamp, :locale
 
       def self.new(*args, &block)
         json = args.first
