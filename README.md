@@ -1,6 +1,8 @@
 # alexa-skills-ruby
 Simple library to interface with the Alexa Skills Kit
 
+[![Build Status](https://travis-ci.org/DanElbert/alexa_skills_ruby.svg?branch=master)](https://travis-ci.org/DanElbert/alexa_skills_ruby)
+
 The primary way to interact with this library is by extending the `AlexaSkillsRuby::Handler` class.  Create a subclass and
 register event handlers.
 
