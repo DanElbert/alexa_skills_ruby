@@ -3,20 +3,22 @@ module AlexaSkillsRuby
 
     def initialize(certificate_cache)
       @certificate_cache = certificate_cache
+      @extra_cas = []
     end
 
     def validate(body, signature_cert_chain_url, signature)
 
       cert_uri = Addressable::URI.parse(signature_cert_chain_url).normalize
-      cert = get_cert_from_cache(cert_uri.to_s)
 
-      unless cert
-        raise SignatureValidationError, "Invalid signature URL: [#{cert_uri.to_s}]" unless valid_cert_uri?(cert_uri)
-        cert = OpenSSL::X509::Certificate.new(fetch_data(cert_uri.to_s))
-        errs = cert_errors(cert)
-        raise SignatureValidationError, "Invalid certificate: #{errs.join(', ')}" unless errs.empty?
-        @certificate_cache.set(cert_uri.to_s, cert.to_s)
-      end
+      raise SignatureValidationError, "Invalid signature URL: [#{cert_uri.to_s}]" unless valid_cert_uri?(cert_uri)
+
+      pem_data = @certificate_cache.get(cert_uri.to_s) || fetch_data(cert_uri.to_s)
+      validator = CertificateValidator.new(@extra_cas)
+      cert = validator.get_signing_certificate(pem_data)
+
+      raise SignatureValidationError, "Invalid certificate" unless cert
+
+      @certificate_cache.set(cert_uri.to_s, pem_data)
 
       public_key = cert.public_key
       signature = Base64.decode64(signature)
@@ -25,19 +27,15 @@ module AlexaSkillsRuby
       end
     end
 
-    def add_ca(cert)
-      certificate_store.add_cert(cert)
-    end
-
-    def add_ca_file(file)
-      certificate_store.add_file(file)
+    def add_certificate_authorities(certs)
+      @extra_cas = certs
     end
 
     private
 
-    def get_cert_from_cache(url)
-      cert_data = @certificate_cache.get(url)
-      if cert_data
+    def get_pem_from_cache(url)
+      pem_data = @certificate_cache.get(url)
+      if pem_data
         cert = OpenSSL::X509::Certificate.new(cert_data)
         if valid_cert?(cert)
           cert

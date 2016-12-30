@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe AlexaSkillsRuby::SignatureValidator, x509: true do
 
   let(:cert_cache) { AlexaSkillsRuby::SimpleCertificateCache.new }
-  let(:validator) { AlexaSkillsRuby::SignatureValidator.new(cert_cache).tap { |v| v.add_ca(root_ca) } }
+  let(:validator) { AlexaSkillsRuby::SignatureValidator.new(cert_cache).tap { |v| v.add_certificate_authorities([root_ca]) } }
   let(:body) { load_example_json('example_launch.json') }
   let(:signature) { Base64.encode64(get_signature(body)) }
 
@@ -48,7 +48,7 @@ describe AlexaSkillsRuby::SignatureValidator, x509: true do
     let(:signing_cert) { build_signing_cert(root_ca, signing_key, false) }
 
     it 'raises an error' do
-      expect { validator.validate(body, certificate_url, signature) }.to raise_error(AlexaSkillsRuby::SignatureValidationError, /Invalid for current date/)
+      expect { validator.validate(body, certificate_url, signature) }.to raise_error(AlexaSkillsRuby::SignatureValidationError, /Invalid certificate/)
     end
   end
 

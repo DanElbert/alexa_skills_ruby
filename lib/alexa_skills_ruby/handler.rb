@@ -20,16 +20,7 @@ module AlexaSkillsRuby
       @signature_validator = SignatureValidator.new(certificate_cache)
 
       if opts[:root_certificates]
-        [opts[:root_certificates]].flatten.each do |ca|
-          case ca
-            when String
-              @signature_validator.add_ca_file(ca)
-            when OpenSSL::X509::Certificate
-              @signature_validator.add_ca(ca)
-            else
-              raise AlexaSkillsRuby::ConfigurationError, 'root_certificates config option must contain only filenames as strings or OpenSSL::X509::Certificate objects'
-          end
-        end
+        @signature_validator.add_certificate_authorities([opts[:root_certificates]].flatten)
       end
     end
 

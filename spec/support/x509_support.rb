@@ -22,11 +22,16 @@ RSpec.shared_context('x509', { x509: true }) do
     signing_key.sign(OpenSSL::Digest::SHA1.new, body)
   end
 
+  def get_serial
+    @serial_counter ||= 0
+    @serial_counter += 1
+  end
+
   def build_root_ca(key)
     root_ca = OpenSSL::X509::Certificate.new
     root_ca.version = 2 # cf. RFC 5280 - to make it a "v3" certificate
-    root_ca.serial = 1
-    root_ca.subject = OpenSSL::X509::Name.parse "/DC=org/DC=ruby-lang/CN=Ruby CA"
+    root_ca.serial = get_serial
+    root_ca.subject = OpenSSL::X509::Name.parse "/DC=org/DC=umn/CN=mpc-root"
     root_ca.issuer = root_ca.subject # root CA's are "self-signed"
     root_ca.public_key = key.public_key
     root_ca.not_before = Time.now
@@ -46,8 +51,8 @@ RSpec.shared_context('x509', { x509: true }) do
   def build_signing_cert(root_ca, signing_key, valid = true)
     cert = OpenSSL::X509::Certificate.new
     cert.version = 2
-    cert.serial = 2
-    cert.subject = OpenSSL::X509::Name.parse "/DC=org/DC=ruby-lang/CN=Ruby certificate"
+    cert.serial = get_serial
+    cert.subject = OpenSSL::X509::Name.parse "/DC=org/DC=umn/CN=mpc-root-#{get_serial}"
     cert.issuer = root_ca.subject # root CA is the issuer
     cert.public_key = signing_key.public_key
     if valid
