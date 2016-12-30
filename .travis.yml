@@ -1,0 +1,7 @@
+language: ruby
+rvm:
+  - '2.3.1'
+
+gemfile:
+  - gemfiles/as-4.2.gemfile
+  - gemfiles/as-5.0.gemfile
