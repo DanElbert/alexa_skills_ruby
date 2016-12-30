@@ -8,4 +8,14 @@ module FixtureSupport
     Oj.load(load_json(name))
   end
 
+  def add_timestamp(json)
+    json['request']['timestamp'] = Time.now.iso8601
+  end
+
+  def load_example_json(name)
+    exp = load_fixture(name)
+    add_timestamp(exp)
+    Oj.dump(exp)
+  end
+
 end

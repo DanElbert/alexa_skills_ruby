@@ -40,10 +40,10 @@ describe AlexaSkillsRuby::Handler do
     end
   end
 
-  let(:handler) { TestHandler.new }
+  let(:handler) { TestHandler.new(skip_signature_validation: true) }
 
   describe 'with a launch request' do
-    let(:request_json) { load_json 'example_launch.json' }
+    let(:request_json) { load_example_json 'example_launch.json' }
 
     it 'fires the handlers' do
       handler.handle(request_json)
@@ -57,7 +57,7 @@ describe AlexaSkillsRuby::Handler do
   end
 
   describe 'with an intent request' do
-    let(:request_json) { load_json 'example_intent.json' }
+    let(:request_json) { load_example_json 'example_intent.json' }
 
     it 'fires the handlers' do
       handler.handle(request_json)
@@ -74,6 +74,7 @@ describe AlexaSkillsRuby::Handler do
     let(:request_json) do
       json = load_fixture 'example_intent.json'
       json['request']['intent']['name'] = 'special'
+      add_timestamp(json)
       Oj.dump(json)
     end
 
@@ -89,7 +90,7 @@ describe AlexaSkillsRuby::Handler do
   end
 
   describe 'with a session ended request' do
-    let(:request_json) { load_json 'example_session_ended.json' }
+    let(:request_json) { load_example_json 'example_session_ended.json' }
 
     it 'fires the handlers' do
       handler.handle(request_json)
@@ -104,10 +105,10 @@ describe AlexaSkillsRuby::Handler do
 
   describe 'with an application_id set' do
 
-    let(:handler) { TestHandler.new({application_id: 'amzn1.echo-sdk-ams.app.000000-d0ed-0000-ad00-000000d00ebe'}) }
+    let(:handler) { TestHandler.new({application_id: 'amzn1.echo-sdk-ams.app.000000-d0ed-0000-ad00-000000d00ebe', skip_signature_validation: true}) }
 
     describe 'with a valid app id in request' do
-      let(:request_json) { load_json 'example_session_ended.json' }
+      let(:request_json) { load_example_json 'example_session_ended.json' }
 
       it 'fires the handlers' do
         handler.handle(request_json)
@@ -124,6 +125,7 @@ describe AlexaSkillsRuby::Handler do
       let(:request_json) do
         json = load_fixture 'example_intent.json'
         json['session']['application']['applicationId'] = 'broke'
+        add_timestamp(json)
         Oj.dump(json)
       end
 

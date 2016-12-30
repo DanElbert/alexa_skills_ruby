@@ -1,6 +1,10 @@
 require 'active_support/core_ext/class/attribute'
 require 'active_support/callbacks'
+require 'addressable/uri'
+require 'base64'
 require 'multi_json'
+require 'net/http'
+require 'openssl'
 
 require 'alexa_skills_ruby/version'
 require 'alexa_skills_ruby/json_object'
@@ -20,6 +24,8 @@ require 'alexa_skills_ruby/json_objects/response'
 require 'alexa_skills_ruby/json_objects/skills_request'
 require 'alexa_skills_ruby/json_objects/skills_response'
 require 'alexa_skills_ruby/errors'
+require 'alexa_skills_ruby/simple_certificate_cache'
+require 'alexa_skills_ruby/signature_validator'
 require 'alexa_skills_ruby/handler'
 
 module AlexaSkillsRuby
