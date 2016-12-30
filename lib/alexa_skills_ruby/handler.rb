@@ -18,6 +18,19 @@ module AlexaSkillsRuby
       certificate_cache = opts[:certificate_cache] || SimpleCertificateCache.new
       @skip_signature_validation = !!opts[:skip_signature_validation]
       @signature_validator = SignatureValidator.new(certificate_cache)
+
+      if opts[:root_certificates]
+        [opts[:root_certificates]].flatten.each do |ca|
+          case ca
+            when String
+              @signature_validator.add_ca_file(ca)
+            when OpenSSL::X509::Certificate
+              @signature_validator.add_ca(ca)
+            else
+              raise AlexaSkillsRuby::ConfigurationError, 'root_certificates config option must contain only filenames as strings or OpenSSL::X509::Certificate objects'
+          end
+        end
+      end
     end
 
     def session_attributes
@@ -45,12 +58,6 @@ module AlexaSkillsRuby
 
       timestamp_diff = (Time.now - Time.iso8601(@request.timestamp)).abs
       raise TimestampValidationError, "Invalid timstamp" if timestamp_diff > 150
-
-      unless @skip_signature_validation
-        run_callbacks :verify_signature do
-          @signature_validator.validate(request_json, signature_cert_chain_url, signature)
-        end
-      end
 
       run_callbacks :authenticate do
         if @application_id
@@ -80,6 +87,10 @@ module AlexaSkillsRuby
       end
 
       MultiJson.dump(@skill_response.as_json)
+    end
+
+    def self.on_verify_signature(&block)
+      set_callback :verify_signature, :before, block
     end
 
     def self.on_authenticate(&block)

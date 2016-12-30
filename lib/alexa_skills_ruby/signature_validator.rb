@@ -14,19 +14,23 @@ module AlexaSkillsRuby
         raise SignatureValidationError, "Invalid signature URL: [#{cert_uri.to_s}]" unless valid_cert_uri?(cert_uri)
         cert = OpenSSL::X509::Certificate.new(fetch_data(cert_uri.to_s))
         errs = cert_errors(cert)
-        raise SignatureValidationError, "Invalid signature: #{errs.join(', ')}" unless errs.empty?
+        raise SignatureValidationError, "Invalid certificate: #{errs.join(', ')}" unless errs.empty?
         @certificate_cache.set(cert_uri.to_s, cert.to_s)
       end
 
       public_key = cert.public_key
       signature = Base64.decode64(signature)
       unless public_key.verify(OpenSSL::Digest::SHA1.new, signature, body)
-        raise SignatureValidationError "Signature is invalid"
+        raise SignatureValidationError, "Signature is invalid"
       end
     end
 
     def add_ca(cert)
       certificate_store.add_cert(cert)
+    end
+
+    def add_ca_file(file)
+      certificate_store.add_file(file)
     end
 
     private
