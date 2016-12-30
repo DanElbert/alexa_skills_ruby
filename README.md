@@ -8,6 +8,7 @@ register event handlers.
 
 The following handlers are available:
 
+* `on_verify_signature` - called before checking message certificate and signature
 * `on_authenticate` - called before checking the ApplicationID
 * `on_session_start` - called first if the request is flagged as a new session
 * `on_launch` - called for a LaunchRequest
@@ -26,6 +27,12 @@ In event handlers, the following methods are available:
 The `AlexaSkillsRuby::Handler` constructor takes an options hash and processes the following keys:
 * `application_id` - If set, will raise a `AlexaSkillsRuby::InvalidApplicationId` if a request's application_id does not match
 * `logger` - Will be available through the `logger` method in the handler; not otherwise used by the base class
+* `skip_signature_validation` - If true, skips any message signature or certificate validation
+* `certificate_cache` - Optional key that allows use of an external cache for Amazon's certificate.  Must be an instance of an object that has the same method definitions as `AlexaSkillsRuby::SimpleCertificateCache`
+* `root_certificates` - If your CA certificates are not accessible to Ruby by default, you may pass a list of either filenames or OpenSSL::X509::Certificate objects for use in validating Amazon's certificate.
+
+The `AlexaSkillsRuby::Handler#handle` method takes 2 arguments: a string containing the body of the request, and a hash of HTTP headers.  If using
+signature validation, the headers hash _must_ contain the Signature and SignatureCertChainUrl HTTP headers.
 
 ## Example Sinatra App Using this Library
 
@@ -50,8 +57,9 @@ post '/' do
   handler = CustomHandler.new(application_id: ENV['APPLICATION_ID'], logger: logger)
 
   begin
-    handler.handle(request.body.read)
-  rescue AlexaSkillsRuby::InvalidApplicationId => e
+    hdrs = { 'Signature' => request.env['HTTP_SIGNATURE'], 'SignatureCertChainUrl' => request.env['HTTP_SIGNATURECERTCHAINURL'] }
+    handler.handle(request.body.read, hdrs)
+  rescue AlexaSkillsRuby::Error => e
     logger.error e.to_s
     403
   end
