@@ -50,9 +50,11 @@ module AlexaSkillsRuby
           if c.subject == chain.first.issuer
             failed = false
             chain.unshift(c)
+            certs.delete(c)
           elsif c.issuer == chain.last.subject
             failed = false
             chain << c
+            certs.delete(c)
           end
         end
       end
