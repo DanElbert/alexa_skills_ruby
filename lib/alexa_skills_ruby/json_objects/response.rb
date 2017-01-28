@@ -12,6 +12,10 @@ module AlexaSkillsRuby
 
       def set_output_speech_text(text)
         self.output_speech = OutputSpeech.text(text)
+        end
+      
+      def set_output_speech_ssml(ssml)
+        self.output_speech = OutputSpeech.ssml(ssml)
       end
 
       def set_simple_card(title, content)
@@ -20,6 +24,13 @@ module AlexaSkillsRuby
 
       def set_reprompt_speech_text(text)
         os = OutputSpeech.text(text)
+        rp = Reprompt.new
+        rp.output_speech = os
+        self.reprompt = rp
+        end
+      
+      def set_reprompt_speech_ssml(ssml)
+        os = OutputSpeech.ssml(ssml)
         rp = Reprompt.new
         rp.output_speech = os
         self.reprompt = rp
