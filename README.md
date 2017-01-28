@@ -45,6 +45,7 @@ class CustomHandler < AlexaSkillsRuby::Handler
   on_intent("GetZodiacHoroscopeIntent") do
     slots = request.intent.slots
     response.set_output_speech_text("Horoscope Text")
+    response.set_reprompt_speech_text("Reprompt Horoscope Text")
     response.set_simple_card("title", "content")
     logger.info 'GetZodiacHoroscopeIntent processed'
   end
